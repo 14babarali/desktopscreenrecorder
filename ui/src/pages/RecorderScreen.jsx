@@ -48,9 +48,14 @@ const RecorderScreen = () => {
                 return;
             }
 
-            // Get screen stream
+            // Get screen stream WITH system audio
             const constraints = {
-                audio: false,
+                audio: {
+                    mandatory: {
+                        chromeMediaSource: 'desktop',
+                        chromeMediaSourceId: selectedSource.id,
+                    },
+                },
                 video: {
                     mandatory: {
                         chromeMediaSource: 'desktop',
@@ -63,13 +68,11 @@ const RecorderScreen = () => {
                 },
             };
 
-            console.log('Requesting screen stream...');
+            console.log('Requesting screen stream with system audio...');
             const screenStream = await navigator.mediaDevices.getUserMedia(constraints);
-            console.log('Screen stream obtained');
+            console.log('Screen stream obtained with tracks:', screenStream.getTracks().map(t => `${t.kind}: ${t.label}`));
 
-            // Get microphone stream if enabled
-            let finalStream = screenStream;
-
+            // Get microphone stream if enabled and mix with system audio
             if (micEnabled) {
                 try {
                     const audioStream = await navigator.mediaDevices.getUserMedia({
@@ -80,16 +83,32 @@ const RecorderScreen = () => {
                         },
                     });
 
-                    // Combine video and audio
-                    const audioTrack = audioStream.getAudioTracks()[0];
-                    finalStream.addTrack(audioTrack);
-                    console.log('Added microphone audio');
+                    // Mix system audio and microphone audio
+                    const audioContext = new AudioContext();
+                    const systemAudioSource = audioContext.createMediaStreamSource(screenStream);
+                    const micAudioSource = audioContext.createMediaStreamSource(audioStream);
+                    const destination = audioContext.createMediaStreamDestination();
+
+                    systemAudioSource.connect(destination);
+                    micAudioSource.connect(destination);
+
+                    // Replace audio track with mixed audio
+                    const systemAudioTrack = screenStream.getAudioTracks()[0];
+                    if (systemAudioTrack) {
+                        screenStream.removeTrack(systemAudioTrack);
+                        systemAudioTrack.stop();
+                    }
+
+                    const mixedAudioTrack = destination.stream.getAudioTracks()[0];
+                    screenStream.addTrack(mixedAudioTrack);
+
+                    console.log('Mixed system audio + microphone');
                 } catch (audioError) {
                     console.warn('Could not get microphone:', audioError);
                 }
             }
 
-            await startRecording(finalStream);
+            await startRecording(screenStream);
             console.log('Recording started successfully');
         } catch (error) {
             console.error('Error starting recording:', error);
@@ -136,7 +155,7 @@ const RecorderScreen = () => {
                 format: 'webm',
                 has_screen: true,
                 has_camera: cameraEnabled,
-                has_system_audio: false,
+                has_system_audio: true, // System audio is always captured
                 has_microphone: micEnabled,
                 tags: [],
             };
@@ -191,10 +210,17 @@ const RecorderScreen = () => {
                         </div>
                     </div>
 
-                    <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded">
-                        <p className="text-sm text-blue-800">
-                            ℹ️ Click "Start Recording" to automatically capture your primary screen
-                        </p>
+                    <div className="mt-4 space-y-2">
+                        <div className="p-4 bg-green-50 border border-green-200 rounded">
+                            <p className="text-sm text-green-800">
+                                ✓ System audio will be captured automatically
+                            </p>
+                        </div>
+                        <div className="p-4 bg-blue-50 border border-blue-200 rounded">
+                            <p className="text-sm text-blue-800">
+                                ℹ️ Enable microphone below to add your voice to the recording
+                            </p>
+                        </div>
                     </div>
                 </div>
 
