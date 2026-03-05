@@ -1,0 +1,113 @@
+Folder PATH listing for volume Enchanted
+Volume serial number is 283A-7386
+H:.
+|   .gitignore
+|   PROJECT_COMPLETION_SUMMARY.md
+|   project_structure.txt
+|   QUICKSTART.md
+|   README.md
+|   
++---.vscode
+|       settings.json
+|       
++---backend
+|   |   .env.example
+|   |   .gitignore
+|   |   requirements.txt
+|   |   
+|   \---app
+|       |   main.py
+|       |   __init__.py
+|       |   
+|       +---api
+|       |       processing.py
+|       |       recordings.py
+|       |       storage.py
+|       |       __init__.py
+|       |       
+|       +---core
+|       |       config.py
+|       |       database.py
+|       |       __init__.py
+|       |       
+|       +---models
+|       |       recording.py
+|       |       __init__.py
+|       |       
+|       +---schemas
+|       |       recording.py
+|       |       __init__.py
+|       |       
+|       +---services
+|       |       recording_service.py
+|       |       storage_service.py
+|       |       video_processing_service.py
+|       |       __init__.py
+|       |       
+|       \---utils
+|               logger.py
+|               validators.py
+|               __init__.py
+|               
++---docs
+|       API.md
+|       ARCHITECTURE.md
+|       COMPONENT_REFERENCE.md
+|       DEPLOYMENT_CHECKLIST.md
+|       DEVELOPMENT.md
+|       FEATURES.md
+|       PROJECT_SUMMARY.md
+|       SETUP.md
+|       SYSTEM_DIAGRAM.md
+|       
+\---ui
+    |   .gitignore
+    |   index.html
+    |   package.json
+    |   postcss.config.js
+    |   tailwind.config.js
+    |   vite.config.js
+    |   
+    +---electron
+    |   |   main.js
+    |   |   preload.js
+    |   |   
+    |   \---recorder
+    |           screenCapture.js
+    |           
+    \---src
+        |   App.jsx
+        |   index.css
+        |   main.jsx
+        |   
+        +---components
+        |       CameraOverlay.jsx
+        |       Layout.jsx
+        |       MicSelector.jsx
+        |       RecorderControls.jsx
+        |       RecordingCard.jsx
+        |       ScreenSelector.jsx
+        |       SettingsPanel.jsx
+        |       Timeline.jsx
+        |       
+        +---features
+        |   \---recorder
+        |           RecorderContext.jsx
+        |           
+        +---hooks
+        |       useRecorder.js
+        |       
+        +---pages
+        |       Dashboard.jsx
+        |       RecorderScreen.jsx
+        |       RecordingLibrary.jsx
+        |       Settings.jsx
+        |       VideoPlayer.jsx
+        |       
+        +---services
+        |       api.js
+        |       
+        \---utils
+                fileHelpers.js
+                mediaDevices.js
+                
